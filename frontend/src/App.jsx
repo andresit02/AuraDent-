@@ -1,10 +1,16 @@
+import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    // Por ahora mostramos directo el Login. 
-    // Luego pondremos el "Router" para navegar entre páginas.
-    <Login />
+    <Routes>
+      {/* Ruta por defecto: Login */}
+      <Route path="/" element={<Login />} />
+      
+      {/* Ruta del Dashboard */}
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
   );
 }
 

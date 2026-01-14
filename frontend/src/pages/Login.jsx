@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { loginUsuario } from '../services/authService'; // Importamos nuestro puente
+import { useNavigate } from 'react-router-dom'; // Importamos el hook para navegar
+import { loginUsuario } from '../services/authService'; // Importamos nuestro servicio de conexión
 
 const Login = () => {
+  const navigate = useNavigate(); // Inicializamos la navegación
+
   const [formData, setFormData] = useState({
     usuario: '',
-    contrasena: '' // OJO: En el backend se llama 'contrasena', debe coincidir
+    contrasena: '' // Debe coincidir con lo que espera el Backend
   });
-  const [error, setError] = useState(''); // Para mostrar mensajes de error rojo
-  const [loading, setLoading] = useState(false); // Para deshabilitar el botón mientras carga
+  
+  const [error, setError] = useState(''); 
+  const [loading, setLoading] = useState(false); 
 
   const handleChange = (e) => {
     setFormData({
@@ -25,17 +29,20 @@ const Login = () => {
       // 1. Llamamos al Backend
       const data = await loginUsuario(formData);
       
-      // 2. Si llegamos aquí, fue exitoso
+      // 2. Si es exitoso, mostramos en consola y redirigimos
       console.log('Login exitoso:', data);
-      alert(`¡Bienvenido/a ${data.user.nombre}! 🦷`);
       
-      // AQUI LUEGO REDIRECCIONAREMOS AL DASHBOARD
-      // window.location.href = '/dashboard'; 
+      // Opcional: Una pequeña alerta antes de cambiar (puedes quitarla si prefieres que sea inmediato)
+      // alert(`¡Bienvenido/a ${data.user.nombre}!`);
+
+      // 3. Redireccionar al Dashboard automáticamente
+      navigate('/dashboard'); 
       
     } catch (err) {
-      // 3. Si falló, mostramos el error
+      // 4. Si falla, mostramos el error
       console.error(err);
-      setError(err.error || 'Error al iniciar sesión');
+      // El backend puede devolver err.error (nuestro mensaje custom) o un error genérico
+      setError(err.error || 'Error al iniciar sesión. Verifique sus credenciales.');
     } finally {
       setLoading(false);
     }
@@ -50,7 +57,7 @@ const Login = () => {
           <p className="text-gray-500 mt-2">Sistema de Gestión Odontológica</p>
         </div>
 
-        {/* Mensaje de Error si existe */}
+        {/* Mensaje de Error (solo se muestra si hay error) */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm text-center">
             {error}
@@ -91,7 +98,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white font-bold py-2 px-4 rounded transition duration-300 ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+            className={`w-full text-white font-bold py-2 px-4 rounded transition duration-300 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             {loading ? 'Verificando...' : 'Ingresar'}
           </button>
