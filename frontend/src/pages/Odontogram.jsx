@@ -78,7 +78,14 @@ const DienteInteractivo = ({ numero, datos, onClick, isSelected }) => {
 // --- COMPONENTE PRINCIPAL ---
 const Odontogram = () => {
   const navigate = useNavigate();
-  
+  // --- PEGAR AQUÍ EL BLOQUE DE SEGURIDAD ---
+  const user = JSON.parse(localStorage.getItem('user'));
+  useEffect(() => {
+    if (!user || !localStorage.getItem('token')) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+  // -----------------------------------------
   // Estados de datos
   const [pacientes, setPacientes] = useState([]);
   const [selectedPaciente, setSelectedPaciente] = useState('');

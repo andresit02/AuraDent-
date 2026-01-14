@@ -24,3 +24,26 @@ export const createPaciente = async (pacienteData) => {
         throw error;
     }
 };
+
+// --- NUEVO: 3. Actualizar ---
+export const updatePaciente = async (id, pacienteData) => {
+    try {
+        const response = await axios.put(`${API_URL}/${id}`, pacienteData);
+        return response.data;
+    } catch (error) {
+        console.error("Error al actualizar paciente:", error);
+        throw error;
+    }
+};
+
+// --- NUEVO: 4. Eliminar ---
+export const deletePaciente = async (id) => {
+    try {
+    const response = await axios.delete(`${API_URL}/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error al eliminar paciente:", error);
+        throw error;
+    }
+};
+

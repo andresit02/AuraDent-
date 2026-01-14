@@ -5,6 +5,14 @@ import { useNavigate } from 'react-router-dom';
 
 const ClinicalRecords = () => {
   const navigate = useNavigate();
+  // --- PEGAR AQUÍ EL BLOQUE DE SEGURIDAD ---
+  const user = JSON.parse(localStorage.getItem('user'));
+  useEffect(() => {
+    if (!user || !localStorage.getItem('token')) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+  // -----------------------------------------
   const [fichas, setFichas] = useState([]);
   const [pacientes, setPacientes] = useState([]); // Para llenar el <select>
   const [showForm, setShowForm] = useState(false);

@@ -1,15 +1,25 @@
+import { useEffect } from 'react'; // <--- IMPORTAR useEffect
 import { useNavigate } from 'react-router-dom';
 import { logoutUsuario } from '../services/authService';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user')); // Quitamos el valor por defecto
   
-  // Recuperamos el nombre del usuario guardado en el login
-  const user = JSON.parse(localStorage.getItem('user')) || { nombre: 'Doctor' };
+  // --- CANDADO DE SEGURIDAD ---
+  useEffect(() => {
+    // Si no hay usuario o no hay token, patada al Login
+    if (!user || !localStorage.getItem('token')) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
+  // Si no hay usuario (mientras redirige), no mostramos nada para evitar parpadeos
+  if (!user) return null; 
 
   const handleLogout = () => {
-    logoutUsuario(); // Borra el token
-    navigate('/');   // Nos manda al Login de nuevo
+    logoutUsuario();
+    navigate('/');
   };
 
   return (

@@ -52,6 +52,49 @@ app.post('/api/pacientes', async (req, res) => {
     }
 });
 
+// 3. ACTUALIZAR un paciente (PUT)
+app.put('/api/pacientes/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { num_historia_clinica, nombres, apellidos, cedula, edad, domicilio, telefono } = req.body;
+
+        const query = `
+            UPDATE pacientes 
+            SET num_historia_clinica = $1, nombres = $2, apellidos = $3, cedula = $4, edad = $5, domicilio = $6, telefono = $7
+            WHERE id = $8
+            RETURNING *;
+        `;
+        
+        const result = await pool.query(query, [num_historia_clinica, nombres, apellidos, cedula, edad, domicilio, telefono, id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Paciente no encontrado" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al actualizar paciente');
+    }
+});
+
+// 4. ELIMINAR un paciente (DELETE)
+app.delete('/api/pacientes/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('DELETE FROM pacientes WHERE id = $1 RETURNING *', [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Paciente no encontrado" });
+        }
+
+        res.json({ mensaje: "Paciente eliminado correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al eliminar paciente. (Puede tener fichas asociadas)');
+    }
+});
+
 // Iniciar servidor
 app.listen(port, () => {
     console.log(`🏥 Servicio de Pacientes corriendo en http://localhost:${port}`);
