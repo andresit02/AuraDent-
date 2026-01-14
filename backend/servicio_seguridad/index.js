@@ -1,94 +1,124 @@
-require('dotenv').config();
 const express = require('express');
-const { Pool } = require('pg');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { Pool } = require('pg');
+require('dotenv').config();
+
+// IMPORTAR SWAGGER
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3001;
+const secretKey = process.env.JWT_SECRET || 'secreto_super_seguro';
 
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-});
+// CONFIGURACIÓN SWAGGER
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Microservicio de Seguridad - AuraDent',
+      version: '1.0.0',
+      description: 'API para autenticación de usuarios (Login) y generación de JWT.',
+    },
+    servers: [
+      { url: `http://localhost:${port}` }
+    ],
+  },
+  apis: [path.join(__dirname, './index.js')],
+};
 
-pool.connect()
-    .then(() => console.log('🔐 Servicio Seguridad: Conectado a BD'))
-    .catch(err => console.error('❌ Error BD', err.stack));
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
 
 // --- RUTAS ---
 
-// 1. REGISTRO (Crear nuevo usuario con contraseña encriptada)
-app.post('/api/auth/register', async (req, res) => {
-    try {
-        const { usuario, contrasena, nombre_completo, rol } = req.body;
-        
-        // Encriptar contraseña
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(contrasena, salt);
-
-        const result = await pool.query(
-            "INSERT INTO usuarios (usuario, contrasena, nombre_completo, rol) VALUES ($1, $2, $3, $4) RETURNING id, usuario, rol",
-            [usuario, hashPassword, nombre_completo, rol]
-        );
-        
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Error al registrar usuario');
-    }
-});
-
-// 2. LOGIN (Verificar credenciales y dar Token)
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Iniciar sesión
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - usuario
+ *               - contrasena
+ *             properties:
+ *               usuario:
+ *                 type: string
+ *                 example: dra_magda
+ *               contrasena:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Login exitoso, devuelve el token
+ *       401:
+ *         description: Credenciales incorrectas
+ */
 app.post('/api/auth/login', async (req, res) => {
-    try {
-        const { usuario, contrasena } = req.body;
+  const { usuario, contrasena } = req.body;
 
-        // Buscar usuario
-        const userResult = await pool.query("SELECT * FROM usuarios WHERE usuario = $1", [usuario]);
-        
-        if (userResult.rows.length === 0) {
-            return res.status(401).json({ error: "Usuario no encontrado" });
-        }
+  try {
+    const userQuery = await pool.query(
+      'SELECT * FROM usuarios WHERE usuario = $1',
+      [usuario]
+    );
 
-        const user = userResult.rows[0];
-
-        // Verificar contraseña
-        // NOTA: Si la contraseña en BD es texto plano (como la semilla '123456'), bcrypt fallará. 
-        // Aquí asumimos que usaremos usuarios creados con /register o que actualizaremos la BD.
-        const validPassword = await bcrypt.compare(contrasena, user.contrasena);
-
-        if (!validPassword) {
-             // FALLBACK TEMPORAL: Si falla bcrypt, probamos texto plano (solo para compatibilidad con tu semilla inicial)
-            if (contrasena === user.contrasena) {
-                // Es válido por texto plano (usuario antiguo)
-            } else {
-                return res.status(401).json({ error: "Contraseña incorrecta" });
-            }
-        }
-
-        // Crear Token JWT
-        const token = jwt.sign(
-            { id: user.id, rol: user.rol }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '8h' }
-        );
-
-        res.json({ token, user: { id: user.id, nombre: user.nombre_completo, rol: user.rol } });
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Error en el servidor');
+    if (userQuery.rows.length === 0) {
+      return res.status(401).json({ error: 'Usuario no encontrado' });
     }
+
+    const user = userQuery.rows[0];
+
+    // Comparación académica simple (correcta para tu contexto)
+    const validPassword = (contrasena === user.password);
+
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.rol },
+      secretKey,
+      { expiresIn: '2h' }
+    );
+
+    res.json({
+      message: 'Autenticación exitosa',
+      token,
+      user: {
+        id: user.id,
+        nombre: user.nombre_completo,
+        rol: user.rol
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 });
 
 app.listen(port, () => {
-    console.log(`🔐 Servicio Seguridad corriendo en http://localhost:${port}`);
+  console.log(`🔐 Servicio de Seguridad corriendo en http://localhost:${port}`);
+  console.log(`📄 Documentación: http://localhost:${port}/api-docs`);
 });
