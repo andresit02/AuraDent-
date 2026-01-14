@@ -31,7 +31,7 @@ const Dashboard = () => {
           <button onClick={() => navigate('/fichas')} className="w-full text-left flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
             <span>📋 Fichas Técnicas</span>
           </button>
-          <button onClick={() => alert("Próximamente: Odontograma")} className="w-full text-left flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
+          <button onClick={() => navigate('/odontograma')} className="w-full text-left flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
             <span>🦷 Odontograma</span>
           </button>
         </nav>
