@@ -49,32 +49,33 @@ const pool = new Pool({
 /**
  * @swagger
  * /api/auth/login:
- *   post:
- *     summary: Iniciar sesión
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - usuario
- *               - contrasena
- *             properties:
- *               usuario:
- *                 type: string
- *                 example: dra_magda
- *               contrasena:
- *                 type: string
- *                 example: 123456
- *     responses:
- *       200:
- *         description: Login exitoso, devuelve el token
- *       401:
- *         description: Credenciales incorrectas
+ * post:
+ * summary: Iniciar sesión
+ * tags: [Auth]
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * required:
+ * - usuario
+ * - contrasena
+ * properties:
+ * usuario:
+ * type: string
+ * example: dra_magda
+ * contrasena:
+ * type: string
+ * example: 123456
+ * responses:
+ * 200:
+ * description: Login exitoso, devuelve el token
+ * 401:
+ * description: Credenciales incorrectas
  */
 app.post('/api/auth/login', async (req, res) => {
+  // Recibimos "contrasena" del frontend
   const { usuario, contrasena } = req.body;
 
   try {
@@ -89,13 +90,26 @@ app.post('/api/auth/login', async (req, res) => {
 
     const user = userQuery.rows[0];
 
-    // Comparación académica simple (correcta para tu contexto)
-    const validPassword = (contrasena === user.password);
+    // --- LÓGICA DE COMPARACIÓN ---
+    let validPassword = false;
+
+    // Obtenemos la contraseña de la DB usando el nombre correcto de tu columna: 'contrasena'
+    const dbPassword = user.contrasena; 
+
+    // Verificamos si es texto plano o hash (para soporte híbrido)
+    if (dbPassword && (dbPassword.startsWith('$2b$') || dbPassword.startsWith('$2a$'))) {
+        // Si está encriptada
+        validPassword = await bcrypt.compare(contrasena, dbPassword);
+    } else {
+        // Si es texto plano (comparación simple)
+        validPassword = (contrasena === dbPassword);
+    }
 
     if (!validPassword) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
+    // Generar Token
     const token = jwt.sign(
       { id: user.id, role: user.rol },
       secretKey,
@@ -107,7 +121,7 @@ app.post('/api/auth/login', async (req, res) => {
       token,
       user: {
         id: user.id,
-        nombre: user.nombre_completo,
+        nombre: user.nombre_completo, // Asegúrate que esta columna exista, si no cámbialo a user.nombres
         rol: user.rol
       }
     });
