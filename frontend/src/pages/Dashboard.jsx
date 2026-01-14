@@ -25,7 +25,7 @@ const Dashboard = () => {
           <a href="#" className="flex items-center px-6 py-3 bg-blue-50 text-blue-600 border-r-4 border-blue-600">
             <span className="font-semibold">🏠 Inicio</span>
           </a>
-          <button onClick={() => alert("Próximamente: Módulo Pacientes")} className="w-full text-left flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
+          <button onClick={() => navigate('/pacientes')} className="w-full text-left flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
             <span>👥 Pacientes</span>
           </button>
           <button onClick={() => alert("Próximamente: Módulo Fichas")} className="w-full text-left flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
