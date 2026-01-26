@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación - AuraDent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        display: none;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.95);
+        overflow-y: auto;   /* 👈 CLAVE */
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #4a5568;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide h2 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 1.8em;
+            margin: 20px 0 15px 0;
+            color: #4a5568;
+        }
+
+        .slide p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .slide ul, .slide ol {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+        }
+
+        .architecture-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .component {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .component.frontend {
+            border-color: #48bb78;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .component.backend {
+            border-color: #4299e1;
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+        }
+
+        .component.database {
+            border-color: #ed8936;
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .tech-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .feature-card h4 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: #4a5568;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .code-snippet {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .conclusion-text {
+            font-size: 1.15em;
+            line-height: 1.7;
+            margin: 20px 0;
+        }
+
+        .conclusion-section {
+            margin: 25px 0;
+            padding-left: 20px;
+            border-left: 4px solid #667eea;
+            background: rgba(102, 126, 234, 0.05);
+            padding: 15px 20px;
+            border-radius: 0 10px 10px 0;
+        }
+        .img{ 
+            display: block;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .slide h1 {
+                font-size: 2em;
+            }
+
+            .slide h2 {
+                font-size: 1.8em;
+            }
+
+            .architecture-diagram {
+                flex-direction: column;
+            }
+
+            .component {
+                min-width: 150px;
+            }
+            
+            .conclusion-text {
+                font-size: 1.05em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide1">
+            <h1>AuraDent</h1>
+            <h2>Sistema de Gestión Odontológica</h2>
+            <p style="text-align: center; font-size: 1.4em; margin-top: 30px;">
+                Una solución completa para la gestión de clínicas dentales
+            </p>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <h3 style="color: #4a5568; margin-bottom: 20px;">Equipo de Desarrollo</h3>
+                <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px;">
+                    <span style="background: rgba(102, 126, 234, 0.1); padding: 8px 16px; border-radius: 20px; font-weight: bold; color: #667eea;">Andres Fernandez</span>
+                    <span style="background: rgba(102, 126, 234, 0.1); padding: 8px 16px; border-radius: 20px; font-weight: bold; color: #667eea;">Sebastian Morales</span>
+                    <span style="background: rgba(102, 126, 234, 0.1); padding: 8px 16px; border-radius: 20px; font-weight: bold; color: #667eea;">Moises Pineda</span>
+                    <span style="background: rgba(102, 126, 234, 0.1); padding: 8px 16px; border-radius: 20px; font-weight: bold; color: #667eea;">Freddy Jimenez</span>
+                    <span style="background: rgba(102, 126, 234, 0.1); padding: 8px 16px; border-radius: 20px; font-weight: bold; color: #667eea;">Mijael Molina</span>
+                </div>
+            </div>
+            <img class="img" src="LOGIN.jpg" alt="">
+
+            <div style="text-align: center; margin-top: 40px;">
+                <p style="font-size: 1.1em; color: #718096;">
+                    Arquitectura de Microservicios • React • Node.js • PostgreSQL
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Requisitos del Proyecto -->
+        <div class="slide" id="slide2">
+            <h2>Requisitos del Proyecto</h2>
+            <p>
+                AuraDent ha sido desarrollado siguiendo una <span class="highlight">especificación detallada de requisitos</span>
+                que garantiza la funcionalidad completa y la calidad del sistema.
+            </p>
+
+            <h3>1. Microservicios</h3>
+            <div class="tech-stack" style="margin-bottom: 20px;">
+                <div class="tech-item">
+                    <h4>Servicio de Gestión de Pacientes</h4>
+                    <p>Creación, actualización, eliminación y consulta de información de pacientes</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Servicio de Fichas Técnicas</h4>
+                    <p>Registro y consulta de tratamientos, presupuestos y pagos</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Servicio de Odontograma</h4>
+                    <p>Visualización y actualización gráfica del estado dental</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Servicio de Seguridad</h4>
+                    <p>Autenticación y autorización de usuarios</p>
+                </div>
+            </div>
+
+            <h3>2. Interfaz de Usuario (UI/UX)</h3>
+            <ul style="margin-bottom: 20px;">
+                <li><strong>Dashboard de Administración</strong> - Resumen de información clave y navegación</li>
+                <li><strong>Gestión de Pacientes</strong> - Formularios para añadir y editar información</li>
+                <li><strong>Fichas Técnicas</strong> - Registro y visualización de tratamientos</li>
+                <li><strong>Odontograma Interactivo</strong> - Herramienta gráfica para estado dental</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Requisitos Técnicos -->
+        <div class="slide" id="slide3">
+            <h2>Requisitos Técnicos</h2>
+
+            <h3>3. Base de Datos</h3>
+            <ul style="margin-bottom: 20px;">
+                <li><strong>PostgreSQL</strong> - Base de datos relacional para almacenamiento persistente</li>
+                <li><strong>Normalización</strong> - Diseño y normalización de tablas de pacientes, fichas y odontogramas</li>
+                <li><strong>Integridad de Datos</strong> - Relaciones y restricciones para mantener consistencia</li>
+            </ul>
+
+            <h3>4. Autenticación y Seguridad</h3>
+            <ul style="margin-bottom: 20px;">
+                <li><strong>Sistema de Autenticación</strong> - Solo usuarios autorizados pueden acceder</li>
+                <li><strong>Comunicaciones Seguras</strong> - HTTPS entre cliente y microservicios</li>
+                <li><strong>Control de Acceso</strong> - Roles y permisos diferenciados</li>
+            </ul>
+
+            <h3>5. Desarrollo y Tecnologías</h3>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <h4>Backend</h4>
+                    <p><strong>Node.js + Express</strong> - Microservicios independientes</p>
+                    <p><strong>REST API</strong> - Comunicación entre servicios</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Frontend</h4>
+                    <p><strong>React + Vite</strong> - Interfaz moderna y rápida</p>
+                    <p><strong>Tailwind CSS</strong> - Estilos responsivos</p>
+                </div>
+                <div class="tech-item">
+                    <h4>DevOps</h4>
+                    <p><strong>Swagger</strong> - Documentación API</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Visión General -->
+        <div class="slide" id="slide4">
+            <h2>¿Qué es AuraDent?</h2>
+            <p>
+                AuraDent es un <span class="highlight">sistema de gestión integral</span> diseñado específicamente para clínicas odontológicas.
+                Permite a los profesionales de la salud dental administrar eficientemente todos los aspectos de su práctica médica.
+            </p>
+
+            <h3>Objetivos Principales:</h3>
+            <ul>
+                <li><strong>Digitalización completa</strong> de registros clínicos</li>
+                <li><strong>Gestión eficiente</strong> de pacientes y tratamientos</li>
+                <li><strong>Visualización gráfica</strong> del estado dental (odontograma)</li>
+                <li><strong>Control financiero</strong> de presupuestos y pagos</li>
+                <li><strong>Seguridad y confidencialidad</strong> de la información médica</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: Arquitectura -->
+        <div class="slide" id="slide5">
+            <h2>Arquitectura del Sistema</h2>
+            <p>
+                AuraDent utiliza una <span class="highlight">arquitectura de microservicios</span> moderna y escalable,
+                separando las responsabilidades en servicios independientes que se comunican entre sí.
+            </p>
+
+            <div class="architecture-diagram">
+                <div class="component frontend">
+                    <h3>Frontend</h3>
+                    <p>React + Vite</p>
+                    <p>Interfaz de Usuario</p>
+                </div>
+
+                <div class="component backend">
+                    <h3>Microservicios</h3>
+                    <p>Node.js + Express</p>
+                    <p>4 servicios independientes</p>
+                </div>
+
+                <div class="component database">
+                    <h3>Base de Datos</h3>
+                    <p>PostgreSQL</p>
+                    <p>Almacenamiento persistente</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Servicios Backend -->
+        <div class="slide" id="slide6">
+            <h2>Microservicios Backend</h2>
+            <p>
+                El backend está dividido en <span class="highlight">4 microservicios especializados</span>,
+                cada uno manejando un dominio específico del negocio odontológico.
+            </p>
+
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <h3>Servicio de Seguridad</h3>
+                    <p>Autenticación y autorización de usuarios</p>
+                    <p>Gestión de roles (Admin, Odontólogo, Asistente)</p>
+                </div>
+
+                <div class="tech-item">
+                    <h3>Servicio de Pacientes</h3>
+                    <p>Registro y gestión de información personal</p>
+                    <p>Historial clínico básico</p>
+                </div>
+
+                <div class="tech-item">
+                    <h3>Servicio de Fichas Clínicas</h3>
+                    <p>Registros detallados de tratamientos</p>
+                    <p>Diagnósticos y procedimientos realizados</p>
+                </div>
+
+                <div class="tech-item">
+                    <h3>Servicio de Odontograma</h3>
+                    <p>Visualización gráfica del estado dental</p>
+                    <p>Mapa interactivo de piezas dentales</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Tecnologías -->
+        <div class="slide" id="slide7">
+            <h2>Stack Tecnológico</h2>
+            <p>
+                AuraDent utiliza <span class="highlight">tecnologías modernas y robustas</span>
+                para garantizar rendimiento, escalabilidad y mantenibilidad.
+            </p>
+
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <h3>Frontend</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>React 18</strong> - Framework UI moderno</li>
+                        <li><strong>Vite</strong> - Build tool ultrarrápido</li>
+                        <li><strong>Tailwind CSS</strong> - Framework de estilos</li>
+                        <li><strong>React Router</strong> - Navegación SPA</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>Backend</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Node.js</strong> - Runtime JavaScript</li>
+                        <li><strong>Express.js</strong> - Framework web</li>
+                        <li><strong>Swagger</strong> - Documentación API</li>
+                        <li><strong>CORS</strong> - Compartir recursos</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>Base de Datos</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>PostgreSQL</strong> - Base de datos relacional</li>
+                        <li><strong>JSONB</strong> - Almacenamiento de datos complejos</li>
+                        <li><strong>Transacciones ACID</strong> - Integridad de datos</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>DevOps</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>ESLint</strong> - Linting de código</li>
+                        <li><strong>Nodemon</strong> - Recarga automática</li>
+                        <li><strong>Git</strong> - Control de versiones</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Base de Datos -->
+        <div class="slide" id="slide8">
+            <h2>Modelo de Datos</h2>
+            <p>
+                La base de datos está diseñada siguiendo las <span class="highlight">mejores prácticas de normalización</span>
+                y optimizada para las necesidades específicas de una clínica odontológica.
+            </p>
+
+            <h3>Tablas Principales:</h3>
+            <ul>
+                <li><strong>usuarios</strong> - Sistema de autenticación y roles</li>
+                <li><strong>pacientes</strong> - Información personal y demográfica</li>
+                <li><strong>fichas_clinicas</strong> - Registros de consultas y tratamientos</li>
+                <li><strong>detalles_diagnostico</strong> - Información clínica detallada</li>
+                <li><strong>pagos</strong> - Control financiero y presupuestos</li>
+                <li><strong>odontogramas</strong> - Estado visual de la dentadura</li>
+            </ul>
+
+            <div class="code-snippet">
+-- Ejemplo de tabla pacientes
+CREATE TABLE pacientes (
+    id SERIAL PRIMARY KEY,
+    num_historia_clinica VARCHAR(20) UNIQUE NOT NULL,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    cedula VARCHAR(15) UNIQUE,
+    edad INT,
+    domicilio TEXT,
+    telefono VARCHAR(20),
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+            </div>
+        </div>
+
+        <!-- Slide 9: Funcionalidades -->
+        <div class="slide" id="slide9">
+            <h2>Funcionalidades Principales</h2>
+            <p>
+                AuraDent ofrece un <span class="highlight">conjunto completo de herramientas</span>
+                para gestionar eficientemente todos los aspectos de una clínica odontológica.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>Gestión de Pacientes</h4>
+                    <p>Registro completo de información personal, historial clínico y datos de contacto</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Registros Clínicos</h4>
+                    <p>Documentación detallada de diagnósticos, tratamientos y evolución del paciente</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Odontograma Digital</h4>
+                    <p>Visualización gráfica interactiva del estado de cada pieza dental</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Control Financiero</h4>
+                    <p>Presupuestos, pagos y seguimiento de saldos pendientes</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Sistema de Seguridad</h4>
+                    <p>Autenticación robusta con roles y permisos diferenciados</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Interfaz Moderna</h4>
+                    <p>Experiencia de usuario intuitiva y responsive</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Interfaz de Usuario -->
+        <div class="slide" id="slide10">
+            <h2>Interfaz de Usuario</h2>
+            <p>
+                La interfaz está diseñada con un enfoque en la <span class="highlight">usabilidad y eficiencia</span>,
+                permitiendo a los odontólogos trabajar de manera rápida y precisa.
+            </p>
+
+            <h3>Páginas Principales:</h3>
+            <ul>
+                <li><strong>Login</strong> - Acceso seguro al sistema</li>
+                <li><strong>Dashboard</strong> - Vista general y estadísticas</li>
+                <li><strong>Pacientes</strong> - Gestión del registro de pacientes</li>
+                <li><strong>Fichas Clínicas</strong> - Registros detallados de tratamientos</li>
+                <li><strong>Odontograma</strong> - Visualización gráfica dental</li>
+            </ul>
+            <img class="img" src="interfaz.jpg" alt="">
+            <p style="margin-top: 30px;">
+                Cada página cuenta con un <span class="highlight">menú lateral persistente</span>
+                para una navegación fluida entre las diferentes secciones del sistema.
+            </p>
+        </div>
+
+        <!-- Slide 11: Beneficios -->
+        <div class="slide" id="slide11">
+            <h2>Beneficios del Sistema</h2>
+            <p>
+                AuraDent no solo digitaliza los procesos tradicionales, sino que los
+                <span class="highlight">optimiza y mejora</span> para aumentar la eficiencia de la clínica.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>Mayor Eficiencia</h4>
+                    <p>Reducción significativa del tiempo en tareas administrativas</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Mejor Atención</h4>
+                    <p>Acceso rápido a historiales clínicos completos</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Datos Seguros</h4>
+                    <p>Almacenamiento seguro y respaldo automático</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Reportes Inteligentes</h4>
+                    <p>Análisis y estadísticas para toma de decisiones</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Escalabilidad</h4>
+                    <p>Arquitectura preparada para crecimiento futuro</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Acceso Remoto</h4>
+                    <p>Trabajo desde cualquier lugar con conexión a internet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusión -->
+        <div class="slide" id="slide12">
+            <h2>Conclusión</h2>
+            
+            <div class="conclusion-text">
+                <p>AuraDent se consolida como una <span class="highlight">solución tecnológica integral y estratégica</span> 
+                para la transformación digital del sector odontológico, fusionando una <span class="highlight">arquitectura de microservicios moderna</span> 
+                con un stack tecnológico robusto (React, Node.js, PostgreSQL) para ofrecer una <span class="highlight">gestión centralizada, eficiente y segura</span> 
+                de todos los procesos clínicos y administrativos.</p>
+                
+                <div class="conclusion-section">
+                    <p>El sistema <span class="highlight">no solo digitaliza, sino que optimiza</span> el flujo de trabajo clínico, 
+                    desde la gestión integral de pacientes (historiales, diagnósticos y tratamientos) hasta la administración financiera 
+                    (presupuestos y pagos), eliminando redundancias y reduciendo errores manuales.</p>
+                </div>
+                
+                <div class="conclusion-section">
+                    <p>Su <span class="highlight">componente diferenciador</span> —el odontograma interactivo— permite una 
+                    <span class="highlight">visualización gráfica precisa y en tiempo real</span> del estado dental, facilitando 
+                    diagnósticos más exactos, planificaciones de tratamiento personalizadas y una comunicación más clara con el paciente.</p>
+                </div>
+                
+                <div class="conclusion-section">
+                    <p>Desde el punto de vista técnico, la <span class="highlight">arquitectura modular basada en microservicios</span> 
+                    (Seguridad, Pacientes, Fichas Clínicas y Odontograma) asegura:</p>
+                    <ul>
+                        <li><strong>Alta escalabilidad:</strong> Capacidad de crecimiento independiente por módulo</li>
+                        <li><strong>Mantenibilidad simplificada:</strong> Actualizaciones sin afectar el sistema global</li>
+                        <li><strong>Resiliencia y disponibilidad:</strong> Fallos aislados no comprometen la operación total</li>
+                    </ul>
+                </div>
+                
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <p style="font-size: 1.3em; font-weight: bold; color: #4a5568;">
+                    ¡Gracias por su atención!
+                </p>
+                <p style="font-size: 1.1em; margin-top: 10px; color: #718096;">
+                    Tecnología de vanguardia • Arquitectura escalable • Experiencia excepcional
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter">1 / 12</div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="prevSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 12;
+
+        function showSlide(slideNumber) {
+            // Ocultar todas las slides
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+
+            // Mostrar la slide actual
+            document.getElementById(`slide${slideNumber}`).classList.add('active');
+
+            // Actualizar contador
+            document.querySelector('.slide-counter').textContent = `${slideNumber} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Controles de teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Inicializar
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
