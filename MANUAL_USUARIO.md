@@ -1,6 +1,15 @@
     # Manual de Usuario - AuraDent
 
 ## Sistema de Gestión Odontológica
+---
+
+## Integrantes 
+1. Andres Fernandez
+2. Freddy Jiménez
+3. Mijael Molina
+4. Moises Pineda
+5. Sebastian Morales
+---
 
 ---
 
