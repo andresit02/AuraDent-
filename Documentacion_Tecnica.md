@@ -660,4 +660,4 @@ El sistema utiliza JSON Web Tokens para autenticación:
 - [ ] Implementar middleware de validación JWT en todos los endpoints
 
 ---
-Para más información sobre el uso del sistema, consultar el Manual de Usuario.
+Para más información sobre el uso del sistema, consultar el Manual de Usuario Gracias.
